@@ -12,10 +12,10 @@ A simple Todo application built with Python Flask. This project is designed for 
 ## 🖼️ Screenshots
 
 ### 🔆 Light Mode
-![Light Mode](screenshots/light en.png)
+ [Light Mode](screenshots/light_en.png)
 
 ### 🌙 Dark Mode
-![Dark Mode](screenshots/dark en.png)
+ [Dark Mode](screenshots/dark_en.png)
 
 ## 🚀 Installation and Setup
 
