@@ -1,15 +1,26 @@
-# Todo App - Python Learning Project
+# 📝 To-Do List Web App
 
-A simple Todo application built with Python Flask. This project is designed for learning Python and web development.
+A minimal, multilingual, and theme-aware to-do list built with **Flask**, **Jinja2**, **Tailwind CSS**, and **JavaScript**.  
+Designed for simplicity and elegance, supporting both **English** and **Farsi** with **Dark** and **Light** modes.
 
-## 🌟 Features
+---
 
-- **Bilingual Support**: English and Persian
-- **Theme Switching**: Dark and Light themes
-- **Responsive Design**: Mobile and desktop friendly
-- **Data Storage**: JSON file storage
-- **Modern UI**: Built with TailwindCSS
-## 🖼️ Screenshots
+### 🌐 Live Demo
+
+🚀 [Click here to try it online](https://todo-web-9b5s.onrender.com/)
+
+---
+
+### ✨ Features
+
+- 🌍 **Multilingual support** (English 🇺🇸 / Farsi 🇮🇷)
+- 🌙 **Dark and Light themes**
+- ⚡️ Responsive and minimal UI
+- 💾 No page reload – smooth DOM updates
+- 🧠 Easy to extend and customize
+- 🌐 Deployed online with **Render**
+
+---
 
 ### 🔆 Light Mode
  [Light Mode](screenshots/light_en.png)
