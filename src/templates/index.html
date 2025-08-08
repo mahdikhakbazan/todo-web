@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'farsi': ['Vazir', 'Tahoma', 'Arial', 'sans-serif']
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'bounce-slow': 'bounce 2s infinite',
+                        'pulse-slow': 'pulse 3s infinite',
+                        'slide-up': 'slideUp 0.5s ease-out',
+                        'slide-down': 'slideDown 0.3s ease-out',
+                        'scale-in': 'scaleIn 0.3s ease-out',
+                        'fade-in-up': 'fadeInUp 0.6s ease-out',
+                        'wiggle': 'wiggle 1s ease-in-out infinite',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Vazir:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        .rtl {
+            direction: rtl;
+            text-align: right;
+        }
+        
+        .ltr {
+            direction: ltr;
+            text-align: left;
+        }
+        
+        .task-item {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .task-item:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .task-item.completed {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(34, 197, 94, 0.05) 100%);
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+        }
+        
+        .dark .glass-effect {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .dark .gradient-bg {
+            background: linear-gradient(135deg, #1e3a8a 0%, #7c3aed 100%);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        .slide-up {
+            animation: slideUp 0.5s ease-out;
+        }
+        
+        .scale-in {
+            animation: scaleIn 0.3s ease-out;
+        }
+        
+        .float {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .bounce-slow {
+            animation: bounce 2s infinite;
+        }
+        
+        .pulse-slow {
+            animation: pulse 3s infinite;
+        }
+        
+        .wiggle {
+            animation: wiggle 1s ease-in-out infinite;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes wiggle {
+            0%, 7% { transform: rotateZ(0); }
+            15% { transform: rotateZ(-15deg); }
+            20% { transform: rotateZ(10deg); }
+            25% { transform: rotateZ(-10deg); }
+            30% { transform: rotateZ(6deg); }
+            35% { transform: rotateZ(-4deg); }
+            40%, 100% { transform: rotateZ(0); }
+        }
+        
+        .checkbox-custom {
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border: 2px solid #d1d5db;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .checkbox-custom:checked {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border-color: #3b82f6;
+            transform: scale(1.1);
+        }
+        
+        .checkbox-custom:checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .dark .checkbox-custom {
+            border-color: #4b5563;
+            background: #374151;
+        }
+        
+        .dark .checkbox-custom:checked {
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+        }
+        
+        .input-glow:focus {
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+            border-color: #3b82f6;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #4b5563, #374151);
+            transform: translateY(-2px);
+        }
+        
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring-circle {
+            stroke-dasharray: 283;
+            stroke-dashoffset: 283;
+            transition: stroke-dashoffset 0.35s;
+            transform-origin: 50% 50%;
+        }
+        
+        .task-stats {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(147, 51, 234, 0.1));
+            backdrop-filter: blur(10px);
+        }
+        
+        .dark .task-stats {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(147, 51, 234, 0.2));
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-all duration-500 min-h-screen">
+    <!-- Animated Background Elements -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute -top-40 -right-40 w-80 h-80 bg-blue-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-float"></div>
+        <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-float" style="animation-delay: -2s;"></div>
+        <div class="absolute top-40 left-40 w-80 h-80 bg-pink-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-float" style="animation-delay: -4s;"></div>
+    </div>
+
+    <div class="relative z-10 min-h-screen">
+        <!-- Header -->
+        <header class="glass-effect sticky top-0 z-50">
+            <div class="max-w-6xl mx-auto px-6 py-6">
+                <div class="flex justify-between items-center">
+                    <!-- Logo and Title -->
+                    <div class="flex items-center space-x-4 rtl:space-x-reverse">
+                        <div class="relative">
+                            <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                </svg>
+                            </div>
+                            <div class="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full animate-pulse-slow"></div>
+                        </div>
+                        <div>
+                            <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent" data-en="Todo App" data-fa="لیست کارها">Todo App</h1>
+                            <p class="text-sm text-gray-600 dark:text-gray-400" data-en="Organize your life" data-fa="زندگی خود را سازماندهی کنید">Organize your life</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Controls -->
+                    <div class="flex items-center space-x-4 rtl:space-x-reverse">
+                        <!-- Language Toggle -->
+                        <button id="languageToggle" class="glass-effect px-4 py-2 rounded-xl font-medium transition-all duration-300 hover:scale-105 active:scale-95 text-gray-800 dark:text-white hover:text-blue-600 dark:hover:text-blue-400" data-en="فارسی" data-fa="English">
+                            <span class="text-lg font-semibold">فارسی</span>
+                        </button>
+                        
+                        <!-- Theme Toggle -->
+                        <button id="themeToggle" class="glass-effect p-3 rounded-xl transition-all duration-300 hover:scale-105 active:scale-95 text-gray-800 dark:text-white hover:text-blue-600 dark:hover:text-blue-400">
+                            <svg id="sunIcon" class="w-6 h-6 hidden text-yellow-500 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m6.75-6.75l.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M17.657 6.343l.707-.707M6.343 17.657l-.707.707M17.657 17.657l.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                            </svg>
+                            <svg id="moonIcon" class="w-6 h-6 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9 9 0 0012 21a9 9 0 009-9 9 9 0 00-2.646-6.354z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="max-w-6xl mx-auto px-6 py-8">
+            <!-- Stats Section -->
+            <div class="task-stats rounded-2xl p-6 mb-8 slide-up">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-blue-600 dark:text-blue-400" id="totalTasks">0</div>
+                        <div class="text-sm text-gray-600 dark:text-gray-400" data-en="Total Tasks" data-fa="کل کارها">Total Tasks</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-green-600 dark:text-green-400" id="completedTasks">0</div>
+                        <div class="text-sm text-gray-600 dark:text-gray-400" data-en="Completed" data-fa="تکمیل شده">Completed</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-orange-600 dark:text-orange-400" id="pendingTasks">0</div>
+                        <div class="text-sm text-gray-600 dark:text-gray-400" data-en="Pending" data-fa="در انتظار">Pending</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Task Form -->
+            <div class="glass-effect rounded-2xl p-8 mb-8 slide-up" style="animation-delay: 0.1s;">
+                <form id="taskForm" class="flex gap-4 rtl:flex-row-reverse">
+                    <div class="flex-1 relative">
+                        <input 
+                            type="text" 
+                            id="taskInput" 
+                            class="w-full px-6 py-4 text-lg border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none input-glow dark:bg-gray-700 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-all duration-300"
+                            placeholder="Add a new task..." 
+                            data-en-placeholder="Add a new task..." 
+                            data-fa-placeholder="کار جدید اضافه کنید..."
+                        
+                            required
+                        >
+                        <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <button 
+                        type="submit" 
+                        class="btn-primary px-8 py-4 text-white font-semibold rounded-xl flex items-center gap-8 shadow-lg"
+                        data-en="Add Task" 
+                        data-fa="اضافه کردن"
+                    >
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        <span>Add Task</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Tasks List -->
+            <div id="tasksContainer" class="space-y-4">
+                <!-- Tasks will be dynamically added here -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="text-center py-16 hidden">
+                <div class="max-w-md mx-auto">
+                    <div class="relative mb-8">
+                        <div class="w-32 h-32 mx-auto bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 rounded-full flex items-center justify-center">
+                            <svg class="w-16 h-16 text-blue-500 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                            </svg>
+                        </div>
+                        <div class="absolute -top-2 -right-2 w-8 h-8 bg-green-400 rounded-full animate-bounce-slow"></div>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4" data-en="No tasks yet" data-fa="هنوز کاری وجود ندارد">No tasks yet</h3>
+                    <p class="text-gray-600 dark:text-gray-400 text-lg" data-en="Add your first task to get started!" data-fa="اولین کار خود را اضافه کنید تا شروع کنید!">Add your first task to get started!</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Global variables
+        let currentLanguage = 'en';
+        let currentTheme = 'light';
+        let tasks = [];
+
+        // Language translations
+        const translations = {
+            en: {
+                'Todo App': 'Todo App',
+                'Organize your life': 'Organize your life',
+                'Add Task': 'Add Task',
+                'Add a new task...': 'Add a new task...',
+                'No tasks yet': 'No tasks yet',
+                'Add your first task to get started!': 'Add your first task to get started!',
+                'Delete': 'Delete',
+                'Edit': 'Edit',
+                'Save': 'Save',
+                'Cancel': 'Cancel',
+                'Task completed': 'Task completed',
+                'Task incomplete': 'Task incomplete',
+                'Completed': 'Completed',
+                'Total Tasks': 'Total Tasks',
+                'Pending': 'Pending'
+            },
+            fa: {
+                'Todo App': 'لیست کارها',
+                'Organize your life': 'زندگی خود را سازماندهی کنید',
+                'Add Task': 'اضافه کردن',
+                'Add a new task...': 'کار جدید اضافه کنید...',
+                'No tasks yet': 'هنوز کاری وجود ندارد',
+                'Add your first task to get started!': 'اولین کار خود را اضافه کنید تا شروع کنید!',
+                'Delete': 'حذف',
+                'Edit': 'ویرایش',
+                'Save': 'ذخیره',
+                'Cancel': 'انصراف',
+                'Task completed': 'کار تکمیل شد',
+                'Task incomplete': 'کار ناتمام',
+                'Completed': 'تکمیل شده',
+                'Total Tasks': 'کل کارها',
+                'Pending': 'در انتظار'
+            }
+        };
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
+        async function initializeApp() {
+            await loadLanguage();
+            await loadTasks();
+            setupEventListeners();
+            updateUI();
+        }
+
+        async function loadLanguage() {
+            try {
+                const response = await fetch('/api/language');
+                const data = await response.json();
+                currentLanguage = data.language;
+            } catch (error) {
+                console.error('Error loading language:', error);
+            }
+        }
+
+        async function loadTasks() {
+            try {
+                const response = await fetch('/api/tasks');
+                tasks = await response.json();
+            } catch (error) {
+                console.error('Error loading tasks:', error);
+                tasks = [];
+            }
+        }
+
+        function setupEventListeners() {
+            // Task form submission
+            document.getElementById('taskForm').addEventListener('submit', handleAddTask);
+            
+            // Enter key for task input
+            document.getElementById('taskInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleAddTask(e);
+                }
+            });
+            
+            // Language toggle
+            document.getElementById('languageToggle').addEventListener('click', toggleLanguage);
+            
+            // Theme toggle
+            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+        }
+
+        async function handleAddTask(e) {
+            e.preventDefault();
+            const input = document.getElementById('taskInput');
+            const title = input.value.trim();
+            
+            if (!title) return;
+            
+            try {
+                const response = await fetch('/api/tasks', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ title })
+                });
+                
+                const newTask = await response.json();
+                tasks.push(newTask);
+                input.value = '';
+                renderTasks();
+            } catch (error) {
+                console.error('Error adding task:', error);
+            }
+        }
+
+        async function toggleTask(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (!task) return;
+            
+            try {
+                const response = await fetch(`/api/tasks/${taskId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ ...task, completed: !task.completed })
+                });
+                
+                const updatedTask = await response.json();
+                const index = tasks.findIndex(t => t.id === taskId);
+                tasks[index] = updatedTask;
+                renderTasks();
+            } catch (error) {
+                console.error('Error updating task:', error);
+            }
+        }
+
+        async function deleteTask(taskId) {
+            try {
+                await fetch(`/api/tasks/${taskId}`, {
+                    method: 'DELETE'
+                });
+                
+                tasks = tasks.filter(t => t.id !== taskId);
+                renderTasks();
+            } catch (error) {
+                console.error('Error deleting task:', error);
+            }
+        }
+
+        async function toggleLanguage() {
+            currentLanguage = currentLanguage === 'en' ? 'fa' : 'en';
+            
+            try {
+                await fetch('/api/language', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ language: currentLanguage })
+                });
+                
+                updateUI();
+            } catch (error) {
+                console.error('Error setting language:', error);
+            }
+        }
+
+        function toggleTheme() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.classList.toggle('dark');
+            
+            const sunIcon = document.getElementById('sunIcon');
+            const moonIcon = document.getElementById('moonIcon');
+            
+            if (currentTheme === 'dark') {
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+            } else {
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+            }
+        }
+
+        function updateUI() {
+            // Update document direction
+            document.documentElement.dir = currentLanguage === 'fa' ? 'rtl' : 'ltr';
+            document.documentElement.lang = currentLanguage;
+            
+            // Update all translatable elements
+            document.querySelectorAll('[data-en]').forEach(element => {
+                const key = element.getAttribute('data-en');
+                element.textContent = translations[currentLanguage][key] || key;
+            });
+            
+            // Update placeholders
+            document.querySelectorAll('[data-en-placeholder]').forEach(element => {
+                const key = element.getAttribute('data-en-placeholder');
+                element.placeholder = translations[currentLanguage][key] || key;
+            });
+            
+            // Update language toggle button
+            const languageToggle = document.getElementById('languageToggle');
+            languageToggle.textContent = currentLanguage === 'en' ? 'فارسی' : 'English';
+            
+            // Update font family
+            document.body.classList.toggle('font-farsi', currentLanguage === 'fa');
+        }
+
+        function renderTasks() {
+            const container = document.getElementById('tasksContainer');
+            const emptyState = document.getElementById('emptyState');
+            
+            if (tasks.length === 0) {
+                container.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                updateStats();
+                return;
+            }
+            
+            emptyState.classList.add('hidden');
+            
+            container.innerHTML = tasks.map((task, index) => `
+                <div class="task-item glass-effect rounded-2xl p-6 fade-in ${task.completed ? 'completed' : ''}" style="animation-delay: ${index * 0.1}s;">
+                    <div class="flex items-center gap-4 rtl:flex-row-reverse">
+                        <button 
+                            onclick="toggleTask(${task.id})" 
+                            class="checkbox-custom flex-shrink-0"
+                            aria-label="${task.completed ? translations[currentLanguage]['Task completed'] : translations[currentLanguage]['Task incomplete']}"
+                        ></button>
+                        
+                        <div class="flex-1">
+                            <span class="text-lg font-medium text-gray-900 dark:text-white ${task.completed ? 'line-through text-gray-500 dark:text-gray-400' : ''}">
+                                ${escapeHtml(task.title)}
+                            </span>
+                            <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                ${new Date(task.created_at).toLocaleDateString(currentLanguage === 'fa' ? 'fa-IR' : 'en-US', {
+                                    year: 'numeric',
+                                    month: 'short',
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                })}
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center gap-2">
+                            ${task.completed ? `
+                                <div class="flex items-center gap-2 text-green-600 dark:text-green-400">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    <span class="text-sm font-medium" data-en="Completed" data-fa="تکمیل شده">Completed</span>
+                                </div>
+                            ` : ''}
+                            
+                            <button 
+                                onclick="deleteTask(${task.id})" 
+                                class="p-3 text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400 transition-all duration-300 hover:scale-110 active:scale-95"
+                                aria-label="${translations[currentLanguage]['Delete']}"
+                            >
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            updateStats();
+        }
+        
+        function updateStats() {
+            const total = tasks.length;
+            const completed = tasks.filter(t => t.completed).length;
+            const pending = total - completed;
+            
+            document.getElementById('totalTasks').textContent = total;
+            document.getElementById('completedTasks').textContent = completed;
+            document.getElementById('pendingTasks').textContent = pending;
+            
+            // Update stats with animation
+            const statsElements = document.querySelectorAll('#totalTasks, #completedTasks, #pendingTasks');
+            statsElements.forEach(element => {
+                element.classList.add('scale-in');
+                setTimeout(() => element.classList.remove('scale-in'), 300);
+            });
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Check for saved theme preference or default to light mode
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+            currentTheme = 'dark';
+            document.getElementById('sunIcon').classList.remove('hidden');
+            document.getElementById('moonIcon').classList.add('hidden');
+        } else {
+            document.documentElement.classList.remove('dark');
+            currentTheme = 'light';
+        }
+    </script>
+</body>
+</html>
